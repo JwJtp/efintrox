@@ -5,99 +5,230 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>window.echarts||document.write('<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"><\/script>')</script>
 <style>
-:root{--bg:#F7F8FC;--sf:#fff;--bd:#E5E7EF;--tx:#0F172A;--mu:#64748B;--pr:#3730A3;--on:#fff;--ok:#059669;--bad:#E11D48;--wa:#D97706;--sh:0 1px 2px rgba(15,23,42,.06),0 8px 24px rgba(15,23,42,.06);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* ===== TOKENS ===== */
+:root{--bg:#F7F8FC;--sf:#fff;--bd:#E5E7EF;--tx:#0F172A;--mu:#64748B;--pr:#3730A3;--on:#fff;--ok:#059669;--bad:#E11D48;--wa:#D97706;--sh:0 1px 2px rgba(15,23,42,.06),0 8px 24px rgba(15,23,42,.06);color-scheme:light}
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0B1020;--sf:#121830;--bd:#232B4A;--tx:#E6E9F5;--mu:#94A3B8;--pr:#818CF8;--on:#0B1020;--ok:#34D399;--bad:#FB7185;--wa:#FBBF24;color-scheme:dark}}
 :root[data-theme=dark]{--bg:#0B1020;--sf:#121830;--bd:#232B4A;--tx:#E6E9F5;--mu:#94A3B8;--pr:#818CF8;--on:#0B1020;--ok:#34D399;--bad:#FB7185;--wa:#FBBF24;color-scheme:dark}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:400 14px/1.5 Inter,system-ui,sans-serif;font-variant-numeric:tabular-nums;transition:background .2s,color .2s}
-button,input,select{font:inherit;color:inherit}:focus-visible{outline:2px solid var(--pr);outline-offset:2px}
-.app{display:grid;grid-template-columns:224px 1fr;min-height:100vh}
-aside{position:sticky;top:0;height:100vh;padding:20px 12px;border-right:1px solid var(--bd);background:var(--sf);display:flex;flex-direction:column;gap:4px}
+
+/* ===== BASE ===== */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:80px}
+body{margin:0;min-height:100vh;min-height:100dvh;overflow-x:hidden;color:var(--tx);font:400 14px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums;transition:background-color .2s,color .2s;padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);
+background:radial-gradient(900px 420px at 8% -5%,color-mix(in srgb,#7C3AED 18%,transparent),transparent),radial-gradient(700px 400px at 96% 0,color-mix(in srgb,#009E73 14%,transparent),transparent),radial-gradient(600px 400px at 60% 100%,color-mix(in srgb,#E69F00 10%,transparent),transparent),var(--bg)}
+@media(min-width:821px){body{background-attachment:fixed}}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--pr);outline-offset:2px}
+h1{font-size:clamp(22px,1.2vw + 17px,30px);letter-spacing:-.03em;margin:0 0 4px;line-height:1.2;background:linear-gradient(90deg,var(--tx),var(--pr) 60%,#7C3AED);-webkit-background-clip:text;background-clip:text;color:transparent}
+h3{font-size:16px;margin:0}
+h4{margin:16px 0 8px}
+.head{font-size:clamp(14px,.4vw + 13px,16px);color:var(--mu);margin:0 0 20px}
+.mu{color:var(--mu);margin:2px 0 0;font-size:13px}
+.up{color:var(--ok)}.dn{color:var(--bad)}.nu{color:var(--mu)}
+.term{border-bottom:1px dotted var(--mu);cursor:help}
+.r{text-align:right!important}
+
+/* ===== SHELL ===== */
+.app{display:grid;grid-template-columns:224px minmax(0,1fr);min-height:100vh;min-height:100dvh}
+.col{min-width:0}
+aside{position:sticky;top:0;height:100vh;height:100dvh;overflow-y:auto;padding:20px 12px;border-right:1px solid var(--bd);background:linear-gradient(180deg,color-mix(in srgb,#7C3AED 12%,var(--sf)),var(--sf));display:flex;flex-direction:column;gap:4px;scrollbar-width:thin}
 .logo{font-weight:700;font-size:20px;letter-spacing:-.03em;padding:4px 12px 16px}.logo b{color:var(--pr)}
-.nv{display:flex;gap:12px;align-items:center;padding:10px 12px;border:0;background:none;border-radius:10px;cursor:pointer;text-align:left;color:var(--mu);font-weight:500;transition:.15s}
-.nv:hover{background:var(--bg)}.nv[aria-current=page]{background:var(--pr);color:var(--on)}.nv i{font-style:normal;width:18px;text-align:center}
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 24px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--bd)}
-.sp{flex:1}.sel,.btn,.ib{border:1px solid var(--bd);background:var(--sf);border-radius:8px;padding:7px 12px;cursor:pointer;transition:.15s}
-.btn.p{background:var(--pr);color:var(--on);border-color:var(--pr);font-weight:600}.btn:hover,.ib:hover{transform:translateY(-1px)}
-.ib{padding:3px 10px;font-size:12px;color:var(--mu)}input.sel{cursor:text}
-.pill{font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;background:color-mix(in srgb,var(--wa) 16%,transparent);color:var(--wa);border:1px solid var(--wa)}
-main{padding:24px;max-width:1280px;width:100%}h1{font-size:28px;letter-spacing:-.03em;margin:0 0 4px}h3{font-size:16px;margin:0}
-.head{font-size:16px;color:var(--mu);margin:0 0 20px}.mu{color:var(--mu);margin:2px 0 0;font-size:13px}
-.card{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:20px;box-shadow:var(--sh);margin-bottom:16px;transition:.2s}
-.g{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}.g .card{margin:0}
-.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:16px}
-.kpi{text-align:left;cursor:pointer;margin:0;padding:16px}.kpi:hover{transform:translateY(-2px)}.lb{color:var(--mu);font-size:13px}
-.val{font-size:28px;font-weight:700;letter-spacing:-.02em}.dl{font-size:12px;font-weight:600}.up{color:var(--ok)}.dn{color:var(--bad)}.nu{color:var(--mu)}
-.term{border-bottom:1px dotted var(--mu);cursor:help}.ch{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px}
-.chart{width:100%}.hero{display:flex;gap:24px;align-items:center;background:linear-gradient(135deg,color-mix(in srgb,var(--pr) 14%,var(--sf)),var(--sf));flex-wrap:wrap}
-.t{width:100%;border-collapse:collapse;font-size:13px}.t th{text-align:left;color:var(--mu);font-weight:500;padding:8px;border-bottom:1px solid var(--bd)}.t td{padding:8px;border-bottom:1px solid var(--bd)}.r{text-align:right!important}
-.tw{overflow-x:auto}.bar{height:8px;border-radius:9px;background:var(--bd);overflow:hidden}.bar i{display:block;height:100%;background:var(--pr)}.bar.o i{background:var(--bad)}
-.ins{border-left:4px solid var(--pr);padding:8px 12px;margin:10px 0;background:var(--bg);border-radius:8px}.ins b{display:block}
-.dr{position:fixed;inset:0 0 0 auto;width:min(560px,100%);background:var(--sf);border-left:1px solid var(--bd);box-shadow:var(--sh);z-index:20;padding:24px;overflow:auto;transform:translateX(0);animation:in .2s ease-out}
-@keyframes in{from{transform:translateX(30px);opacity:0}}.fm{background:var(--bg);border-radius:8px;padding:10px 12px;font-family:ui-monospace,monospace;font-size:13px}
-.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:30;display:flex;gap:12px}
-.toast button{background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer}
-.sk{height:120px;border-radius:14px;background:linear-gradient(90deg,var(--bd),var(--sf),var(--bd));background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:16px}@keyframes sh{to{background-position:-200% 0}}
-.drop{border:2px dashed var(--bd);border-radius:14px;padding:48px 16px;text-align:center;cursor:pointer}.drop.h{border-color:var(--pr);background:var(--bg)}
-.em{text-align:center;padding:40px 16px}.em .ic{font-size:40px}.chat{max-height:420px;overflow:auto}.m{padding:10px 14px;border-radius:12px;margin:8px 0;max-width:86%}.m.u{background:var(--pr);color:var(--on);margin-left:auto}.m.a{background:var(--bg)}
-.chip{margin:0 6px 6px 0;border-radius:99px}.bs{font-size:12px;color:var(--mu);border-top:1px solid var(--bd);margin-top:8px;padding-top:6px}
-.tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 8px;border-radius:99px;border:1px solid var(--bd);color:var(--mu)}
-@media(max-width:800px){.app{display:block}aside{position:fixed;top:auto;bottom:0;left:0;right:0;height:auto;flex-direction:row;z-index:10;padding:6px;border-right:0;border-top:1px solid var(--bd);padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))}.logo{display:none}.nv{flex:1;flex-direction:column;gap:0;padding:6px 2px;font-size:11px;text-align:center}main{padding:16px 16px 90px}.top{padding:10px 16px}.kpis{display:flex;overflow-x:auto;scroll-snap-type:x mandatory}.kpi{min-width:72%;scroll-snap-align:start}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-body{background:radial-gradient(900px 420px at 8% -5%,color-mix(in srgb,#7C3AED 18%,transparent),transparent),radial-gradient(700px 400px at 96% 0,color-mix(in srgb,#009E73 14%,transparent),transparent),radial-gradient(600px 400px at 60% 100%,color-mix(in srgb,#E69F00 10%,transparent),transparent),var(--bg);background-attachment:fixed}
-aside{background:linear-gradient(180deg,color-mix(in srgb,#7C3AED 12%,var(--sf)),var(--sf))}
+.nv{display:flex;gap:12px;align-items:center;padding:10px 12px;border:0;background:none;border-radius:10px;cursor:pointer;text-align:left;color:var(--mu);font-weight:500;transition:.15s;white-space:nowrap}
+.nv:hover{background:var(--bg)}
 .nv[aria-current=page]{background:linear-gradient(135deg,#3730A3,#7C3AED);color:#fff;box-shadow:0 6px 16px rgba(55,48,163,.35)}
-.btn.p{background:linear-gradient(135deg,#3730A3,#7C3AED);color:#fff;border:0}
-h1{background:linear-gradient(90deg,var(--tx),var(--pr) 60%,#7C3AED);-webkit-background-clip:text;background-clip:text;color:transparent}
+.nv i{font-style:normal;width:18px;text-align:center}
+.top{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:calc(12px + env(safe-area-inset-top,0px)) 24px 12px;background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--bd)}
+.top .btn,.top .sel,.top .pill{flex:none;white-space:nowrap}
+.top .sm{display:none}
+.sp{flex:1}
+main{padding:24px;max-width:1360px;width:100%;margin-inline:auto}
+
+/* ===== CONTROLS ===== */
+.sel,.btn,.ib{border:1px solid var(--bd);background:var(--sf);border-radius:8px;padding:7px 12px;cursor:pointer;transition:.15s}
+input.sel{cursor:text}
+.btn.p{background:linear-gradient(135deg,#3730A3,#7C3AED);color:#fff;border:0;font-weight:600}
+.btn:hover,.ib:hover{transform:translateY(-1px)}
+.ib{padding:3px 10px;font-size:12px;color:var(--mu)}
+.pill{font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;background:color-mix(in srgb,var(--wa) 16%,transparent);color:var(--wa);border:1px solid var(--wa)}
+.chip{margin:0 6px 6px 0;border-radius:99px}
+.chip.on{background:linear-gradient(135deg,#3730A3,#7C3AED);color:#fff;border-color:transparent}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 8px;border-radius:99px;border:1px solid var(--bd);color:var(--mu)}
+.tf{width:100%;max-width:320px;margin:0 0 8px}
+kbd{font:600 11px ui-monospace,monospace;border:1px solid var(--bd);border-radius:5px;padding:1px 5px;color:var(--mu)}
+.g label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mu)}
+
+/* ===== CARDS & GRIDS ===== */
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:20px;box-shadow:var(--sh);margin-bottom:16px;transition:.2s;min-width:0}
 .card:hover{box-shadow:0 12px 32px rgba(55,48,163,.16)}
+.g{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+.g>*{min-width:0}
+.g .card{margin:0}
+.g .card:nth-child(2n){border-top:3px solid #009E73}
+.g .card:nth-child(2n+1){border-top:3px solid #7C3AED}
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));margin-bottom:16px}
+.kpis>*{min-width:0}
 .kpi,.tile,.cat{position:relative;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--c) 16%,var(--sf)),var(--sf) 72%)}
 .kpi::before,.tile::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:var(--c)}
-.cat{border-left:5px solid var(--c);text-align:left;cursor:pointer;width:100%;display:block}.cat:hover{transform:translateY(-3px)}
-.ico{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:20px;background:color-mix(in srgb,var(--c) 22%,transparent)}
+.kpi{display:block;width:100%;text-align:left;cursor:pointer;margin:0;padding:16px}
+.kpi:hover{transform:translateY(-2px)}
+.lb{color:var(--mu);font-size:13px}
+.val{font-size:clamp(20px,1vw + 15px,28px);font-weight:700;letter-spacing:-.02em;overflow-wrap:anywhere}
+.dl{font-size:12px;font-weight:600}
+.ch{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px 12px;margin-bottom:8px}
+.chart{width:100%;max-width:100%;overflow:hidden}
+.hero{display:flex;gap:24px;align-items:center;flex-wrap:wrap;background:linear-gradient(135deg,color-mix(in srgb,#7C3AED 20%,var(--sf)),color-mix(in srgb,#009E73 16%,var(--sf)))}
+.cat{border-left:5px solid var(--c);text-align:left;cursor:pointer;width:100%;display:block}
+.cat:hover{transform:translateY(-3px)}
+.ico{width:42px;height:42px;flex:none;border-radius:12px;display:grid;place-items:center;font-size:20px;background:color-mix(in srgb,var(--c) 22%,transparent)}
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c)}
-.chip.on{background:linear-gradient(135deg,#3730A3,#7C3AED);color:#fff;border-color:transparent}
-.hero{background:linear-gradient(135deg,color-mix(in srgb,#7C3AED 20%,var(--sf)),color-mix(in srgb,#009E73 16%,var(--sf)))}
-.tot td{font-weight:700;background:var(--bg)}.t th[colspan]{color:var(--pr);padding-top:14px}
-.ins{border-left-color:#E69F00}.dr{width:min(640px,100%)}.db{margin-top:12px;display:grid;gap:8px}.dbr{display:grid;grid-template-columns:minmax(70px,120px) 1fr 74px;gap:10px;align-items:center;font-size:12px}.dbr span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mu)}.dbr b{text-align:right}.dbr .bar{height:10px}.g .card:nth-child(2n){border-top:3px solid #009E73}.g .card:nth-child(2n+1){border-top:3px solid #7C3AED}
-.pulse{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin-bottom:16px}
-.pc{display:flex;flex-direction:column;gap:2px;text-align:left;cursor:pointer;border:1px solid var(--bd);border-left:5px solid var(--mu);border-radius:14px;background:var(--sf);padding:14px 16px}
-.pc b{font-size:20px;letter-spacing:-.02em}.pc.ok{border-left-color:var(--ok)}.pc.warn{border-left-color:var(--wa)}.pc.bad{border-left-color:var(--bad)}.pc:hover{box-shadow:var(--sh)}
-.t tbody tr:hover{background:color-mix(in srgb,var(--pr) 8%,transparent)}.t th[data-s]{cursor:pointer;user-select:none}.t th[data-s]:hover{color:var(--tx)}.t th.asc::after{content:" ▲"}.t th.desc::after{content:" ▼"}
-.tf{width:100%;max-width:320px;margin:0 0 8px}
+.pulse{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));margin-bottom:16px}
+.pc{display:flex;flex-direction:column;gap:2px;text-align:left;cursor:pointer;border:1px solid var(--bd);border-left:5px solid var(--mu);border-radius:14px;background:var(--sf);padding:14px 16px;min-width:0}
+.pc b{font-size:20px;letter-spacing:-.02em;overflow-wrap:anywhere}
+.pc.ok{border-left-color:var(--ok)}.pc.warn{border-left-color:var(--wa)}.pc.bad{border-left-color:var(--bad)}
+.pc:hover{box-shadow:var(--sh)}
+.ins{border-left:4px solid #E69F00;padding:8px 12px;margin:10px 0;background:var(--bg);border-radius:8px;overflow-wrap:anywhere}
+.ins b{display:block}
+.bar{height:8px;border-radius:9px;background:var(--bd);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pr)}
+.bar.o i{background:var(--bad)}
+.fm{background:var(--bg);border-radius:8px;padding:10px 12px;font-family:ui-monospace,monospace;font-size:13px;overflow-x:auto}
+.db{margin-top:12px;display:grid;gap:8px}
+.dbr{display:grid;grid-template-columns:minmax(70px,120px) 1fr 74px;gap:10px;align-items:center;font-size:12px}
+.dbr span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mu)}
+.dbr b{text-align:right}.dbr .bar{height:10px}
+
+/* ===== TABLES ===== */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.t{width:100%;border-collapse:collapse;font-size:13px}
+.t th{text-align:left;color:var(--mu);font-weight:500;padding:8px;border-bottom:1px solid var(--bd)}
+.t td{padding:8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.t tbody tr:hover{background:color-mix(in srgb,var(--pr) 8%,transparent)}
+.t th[colspan]{color:var(--pr);padding-top:14px}
+.t th[data-s]{cursor:pointer;user-select:none}.t th[data-s]:hover{color:var(--tx)}
+.t th.asc::after{content:" ▲"}.t th.desc::after{content:" ▼"}
+.tot td{font-weight:700;background:var(--bg)}
+
+/* ===== OVERLAYS ===== */
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(640px,100%);max-width:100vw;background:var(--sf);border-left:1px solid var(--bd);box-shadow:var(--sh);z-index:20;padding:24px;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;animation:in .2s ease-out}
+@keyframes in{from{transform:translateX(30px);opacity:0}}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);max-width:min(92vw,520px);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:30;display:flex;gap:12px;align-items:center}
+.toast button{background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer}
+.sk{height:120px;border-radius:14px;background:linear-gradient(90deg,var(--bd),var(--sf),var(--bd));background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:16px}
+@keyframes sh{to{background-position:-200% 0}}
 #pal{position:fixed;inset:0;z-index:40;background:rgba(10,14,30,.5);display:grid;place-items:start center;padding-top:12vh}
 .pb{width:min(560px,94vw);background:var(--sf);border:1px solid var(--bd);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.35);overflow:hidden}
 .pb input{width:100%;border:0;border-bottom:1px solid var(--bd);padding:16px;background:none;font-size:16px;outline:0}
-.pb ul{list-style:none;margin:0;padding:6px;max-height:50vh;overflow:auto}.pb li{padding:10px 12px;border-radius:8px;cursor:pointer}.pb li[aria-selected=true]{background:var(--pr);color:var(--on)}
+.pb ul{list-style:none;margin:0;padding:6px;max-height:50vh;overflow:auto}
+.pb li{padding:10px 12px;border-radius:8px;cursor:pointer}
+.pb li[aria-selected=true]{background:var(--pr);color:var(--on)}
 .pb p{margin:0;padding:8px 14px;font-size:12px;color:var(--mu);border-top:1px solid var(--bd)}
-kbd{font:600 11px ui-monospace,monospace;border:1px solid var(--bd);border-radius:5px;padding:1px 5px;color:var(--mu)}
-@media print{aside,.top,#pal,.toast{display:none!important}.app{display:block}.card{box-shadow:none;break-inside:avoid}}
-@media(max-width:800px){#kb kbd{display:none}}
-.top{flex-wrap:nowrap;overflow-x:auto;gap:6px;padding:8px 16px;scrollbar-width:none}.top::-webkit-scrollbar{display:none}.top .btn,.top .sel,.top .pill{flex:none;white-space:nowrap}
-@media(min-width:801px) and (max-width:1200px){.app{grid-template-columns:68px 1fr}.logo{display:none}.nv{justify-content:center;padding:12px 0}.nv{font-size:0}.nv i{font-size:18px;width:auto}#kb kbd{display:none}main{padding:16px}}
-/* ---- mobile-first refinements ---- */
-html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
-.g label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mu)}
-.card,.kpis>*{min-width:0}.t td,.t th{vertical-align:top}
-@media(max-width:800px){
-main{padding:14px 12px calc(88px + env(safe-area-inset-bottom,0px))}
-h1{font-size:22px}h3{font-size:15px}
-.g{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr;gap:8px}.tile .val{font-size:20px}
-input.sel,select.sel,.sel{font-size:16px;min-height:44px;width:100%}.top .sel{width:auto}
+
+/* ===== PAGE PARTS ===== */
+.drop{border:2px dashed var(--bd);border-radius:14px;padding:48px 16px;text-align:center;cursor:pointer}
+.drop.h{border-color:var(--pr);background:var(--bg)}
+.em{text-align:center;padding:40px 16px}.em .ic{font-size:40px}
+.chat{max-height:420px;overflow:auto;-webkit-overflow-scrolling:touch}
+.m{padding:10px 14px;border-radius:12px;margin:8px 0;max-width:86%;overflow-wrap:anywhere}
+.m.u{background:var(--pr);color:var(--on);margin-left:auto}
+.m.a{background:var(--bg)}
+.bs{font-size:12px;color:var(--mu);border-top:1px solid var(--bd);margin-top:8px;padding-top:6px}
+
+/* ===== RESPONSIVE: extra-large desktop (1600px+) ===== */
+@media(min-width:1600px){
+.app{grid-template-columns:248px minmax(0,1fr)}
+main{max-width:1560px;padding:32px}
+.top{padding-left:32px;padding-right:32px}
+.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(min-width:2200px){body{font-size:15px}main{max-width:1840px}}
+
+/* ===== RESPONSIVE: laptop / tablet landscape (821–1200px): icon rail ===== */
+@media(min-width:821px) and (max-width:1200px){
+.app{grid-template-columns:78px minmax(0,1fr)}
+aside{padding:14px 6px;gap:2px}
+.logo{display:none}
+.nv{flex-direction:column;justify-content:center;gap:2px;padding:10px 2px;font-size:10.5px;text-align:center;border-radius:12px}
+.nv i{font-size:18px;width:auto}
+main{padding:20px}
+.top{padding-left:20px;padding-right:20px}
+#kb kbd{display:none}}
+
+/* ===== RESPONSIVE: tablet portrait + phone (up to 820px): bottom navigation ===== */
+@media(max-width:820px){
+html{scroll-padding-top:16px}
+.app{display:block}
+aside{position:fixed;top:auto;bottom:0;left:0;right:0;height:auto;z-index:10;flex-direction:row;overflow-x:auto;overflow-y:hidden;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));border-right:0;border-top:1px solid var(--bd);background:var(--sf);scrollbar-width:none;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;box-shadow:0 -6px 20px rgba(15,23,42,.08)}
+aside::-webkit-scrollbar{display:none}
+.logo{display:none}
+.nv{flex:1 0 auto;min-width:68px;flex-direction:column;justify-content:center;gap:2px;padding:6px 4px;font-size:11px;text-align:center;scroll-snap-align:center}
+.nv i{font-size:18px;width:auto}
+main{padding:16px 16px calc(92px + env(safe-area-inset-bottom,0px))}
+.top{padding:calc(8px + env(safe-area-inset-top,0px)) 16px 8px;gap:6px}
+.top .lg{display:none}.top .sm{display:inline}
+#kb kbd{display:none}
+.toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+.dr{padding:16px;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+.card{padding:16px}
 .btn,.ib{min-height:40px}
-aside{overflow-x:auto;justify-content:flex-start;gap:2px;scrollbar-width:none}aside::-webkit-scrollbar{display:none}
-.nv{flex:0 0 auto;min-width:64px;font-size:11px}
-.t{min-width:420px;font-size:13px}.tw{-webkit-overflow-scrolling:touch}
-.card{padding:14px}.dr{width:100%;padding:16px}.hero{gap:12px}
-.chart{max-width:100%}}
-@media(max-width:380px){.kpis{grid-template-columns:1fr}}
+.sel{min-height:40px}
+.chat{max-height:50vh}
+#pal{padding-top:6vh}}
+
+/* ===== RESPONSIVE: tablet portrait (601–820px) ===== */
+@media(min-width:601px) and (max-width:820px){
+.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+.nv{font-size:12px;min-width:84px}}
+
+/* ===== RESPONSIVE: phone (up to 600px) ===== */
+@media(max-width:600px){
+body{font-size:14px}
+main{padding:12px 12px calc(90px + env(safe-area-inset-bottom,0px))}
+.top{position:static;padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px}
+.head{margin-bottom:14px}
+h3{font-size:15px}
+.g{grid-template-columns:minmax(0,1fr);gap:12px}
+.kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.kpi{padding:12px}.kpi .val{font-size:20px}.tile{padding:12px}.tile .val{font-size:20px}
+.pulse{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pc{padding:10px 12px}.pc b{font-size:17px}
+input.sel,select.sel{font-size:16px;min-height:44px}
+.top .sel{width:auto;min-height:40px;font-size:14px;padding:6px 10px}
+.g .sel,.card>.sel,.drop .sel,label .sel,.card input.sel{width:100%}
+.btn,.ib{min-height:40px}
+.hero{gap:12px;justify-content:center;text-align:left}
+.tw>.t:is(:has(th:nth-child(5)),:has(td:nth-child(5))){min-width:540px}
+.t{font-size:12.5px}.t th,.t td{padding:7px 6px}
+.dr{width:100%;border-left:0}
+.m{max-width:94%}
+.chat{max-height:45vh}
+.dbr{grid-template-columns:minmax(60px,90px) 1fr 66px;gap:8px}
+.drop{padding:32px 12px}
+.em{padding:28px 12px}
+.ch>*{max-width:100%}
+.tf{max-width:100%}}
+@media(max-width:380px){
+.kpis,.pulse{grid-template-columns:minmax(0,1fr)}
+.nv{min-width:62px;font-size:10.5px}
+.top .sel{max-width:46vw}}
+
+/* ===== RESPONSIVE: landscape phones / very short screens ===== */
+@media(max-height:480px) and (orientation:landscape){
+.top{position:static}
+aside{padding-top:4px}
+.nv{padding:4px 2px}
+.nv i{font-size:16px}
+main{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}}
+@media(min-width:821px) and (max-height:520px){aside{padding-top:8px}.nv{padding:6px 2px}}
+
+/* ===== MOTION + PRINT ===== */
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media print{aside,.top,#pal,.toast{display:none!important}.app{display:block}main{padding:0;max-width:none}.card{box-shadow:none;break-inside:avoid}.dr{position:static;width:auto}}
 </style></head><body>
 <div class="app"><aside id="nav" aria-label="Main"><div class="logo">efintro<b>x</b></div></aside>
-<div><div class="top">
+<div class="col"><div class="top">
 <select class="sel" id="rg" aria-label="Date range" onchange="S.range=+this.value;render()"><option value="1">Latest month</option><option value="3" selected>Last 3 months</option><option value="6">Last 6 months</option><option value="12">Last 12 months</option></select>
 <select class="sel" aria-label="Currency" onchange="S.cur=this.value;render()"><option>INR</option><option>USD</option><option>EUR</option></select>
 <button class="btn" id="adv" aria-pressed="false" onclick="S.adv=!S.adv;this.setAttribute('aria-pressed',S.adv);this.textContent=S.adv?'Advanced':'Simple';render()">Simple</button>
 <span class="sp"></span><span class="pill" id="demo" hidden>DEMO DATA</span>
-<button class="btn" id="own" onclick="go('data')">Use my own data</button>
+<button class="btn" id="own" onclick="go('data')"><span class="lg">Use my own data</span><span class="sm">My data</span></button>
 <button class="btn" aria-label="Toggle theme" onclick="theme()">◐</button></div>
 <main id="main"></main></div></div>
 <div id="ov"></div>
@@ -173,7 +304,7 @@ function scenario(h){const R=fcOf(M.rev,h).fc,E=fcOf(M.exp,h).fc,B=fcOf(net,h).f
 function mc(f,sd,c0,h){seed=11;const N=1000,P=[];let ruin=0;for(let r=0;r<N;r++){let c=c0,p=[],bad=0;for(let i=0;i<h;i++){c+=f[i]+sd*gauss();p.push(c);if(c<0)bad=1}ruin+=bad;P.push(p)}const q=(i,x)=>P.map(p=>p[i]).sort((a,b)=>a-b)[Math.floor(x*(N-1))];return{ruin:ruin/N,p10:f.map((_,i)=>q(i,.1)),p50:f.map((_,i)=>q(i,.5)),p90:f.map((_,i)=>q(i,.9))}}
 /* ---------- UI helpers ---------- */
 const NAV=[['dash','▦','Dashboard'],['exp','↯','Expenses'],['inv','▤','Inventory'],['fc','↗','Forecast'],['cfo','✦','AI CFO'],['rep','▥','Reports'],['data','⇪','Data']];
-function nav(){$('#nav').innerHTML='<div class="logo">efintro<b>x</b></div>'+NAV.map(([k,i,l])=>`<button class="nv" ${S.view===k?'aria-current="page"':''} onclick="go('${k}')"><i aria-hidden="true">${i}</i>${l}</button>`).join('');$('#demo').hidden=!S.demo}
+function nav(){const a=$('#nav'),sl=a.scrollLeft;a.innerHTML='<div class="logo">efintro<b>x</b></div>'+NAV.map(([k,i,l])=>`<button class="nv" ${S.view===k?'aria-current="page"':''} onclick="go('${k}')"><i aria-hidden="true">${i}</i>${l}</button>`).join('');$('#demo').hidden=!S.demo;a.scrollLeft=sl;if(matchMedia('(max-width:820px)').matches){const c=a.querySelector('[aria-current]');if(c)try{a.scrollTo({left:c.offsetLeft-(a.clientWidth-c.offsetWidth)/2,behavior:'auto'})}catch(e){}}}
 function go(v){S.view=v;render();scrollTo(0,0)}
 function theme(){const r=document.documentElement,d=r.dataset.theme==='dark'||(!r.dataset.theme&&matchMedia('(prefers-color-scheme:dark)').matches);r.dataset.theme=d?'light':'dark';setTimeout(render,50)}
 function toast(m,act,fn){const d=document.createElement('div');d.className='toast';d.setAttribute('role','status');d.innerHTML=esc(m)+(act?`<button>${act}</button>`:'');if(act)d.querySelector('button').onclick=()=>{fn();d.remove()};document.body.append(d);setTimeout(()=>d.remove(),5000)}
@@ -184,12 +315,15 @@ addEventListener('keydown',e=>{if(e.key==='Escape')closeD();if(/INPUT|SELECT|TEX
 const dbars=r=>{const a=(r||[]).filter(x=>typeof x[1]==='number').slice(0,6);if(!a.length)return'';const mx=Math.max(...a.map(x=>Math.abs(x[1])),1);return`<div class="db">${a.map((x,i)=>`<div class="dbr"><span title="${esc(x[0])}">${esc(x[0])}</span><div class="bar"><i style="width:${Math.abs(x[1])/mx*100}%;background:${x[1]<0?'#E11D48':PAL[i%8]}"></i></div><b>${money(x[1])}</b></div>`).join('')}</div>`};
 function cc(id,title,sub,opt,rows,click,h=280){CH[id]={opt,rows,click};return`<section class="card"><div class="ch"><div><h3>${title}</h3><p class="mu">${sub}</p></div><div><button class="ib" onclick="tgl('${id}')" aria-label="View ${title} as table">Table</button></div></div><div id="${id}" class="chart" style="height:${h}px" role="img" aria-label="${title}. ${sub}"></div><div id="${id}_t" class="tw" hidden></div></section>`}
 function tgl(id){const t=$('#'+id+'_t'),c=$('#'+id);t.hidden=!t.hidden;c.hidden=!t.hidden;if(!t.hidden)t.innerHTML='<table class="t"><tbody>'+CH[id].rows.map(r=>`<tr><td>${esc(r[0])}</td><td class="r">${typeof r[1]==='number'?money(r[1],1):esc(r[1])}</td></tr>`).join('')+'</tbody></table>';else INST[id]&&INST[id].resize()}
-const base=()=>({color:PAL,textStyle:{fontFamily:'Inter,system-ui',color:css('--mu')},tooltip:{trigger:'axis',confine:true},grid:{left:8,right:12,top:36,bottom:8,containLabel:true},legend:{top:0,textStyle:{color:css('--mu')}},animationDuration:matchMedia('(prefers-reduced-motion:reduce)').matches?0:700});
-const ax=()=>({axisLine:{lineStyle:{color:css('--bd')}},axisLabel:{color:css('--mu')},splitLine:{lineStyle:{color:css('--bd')}}}),yA=()=>({type:'value',...ax(),axisLabel:{color:css('--mu'),formatter:cmp}});
-const donut=(data,onc)=>({...base(),tooltip:{trigger:'item',confine:true,valueFormatter:v=>money(v,1)},grid:undefined,legend:{bottom:0,textStyle:{color:css('--mu')}},series:[{type:'pie',radius:['52%','76%'],center:['50%','44%'],label:{show:false},itemStyle:{borderColor:css('--sf'),borderWidth:2},data:data.map(([name,value])=>({name,value}))}]});
+const base=()=>({color:PAL,textStyle:{fontFamily:'Inter,system-ui',color:css('--mu')},tooltip:{trigger:'axis',confine:true},grid:{left:8,right:12,top:36,bottom:8,containLabel:true},legend:{type:'scroll',top:0,textStyle:{color:css('--mu')}},animationDuration:matchMedia('(prefers-reduced-motion:reduce)').matches?0:700});
+const ax=()=>({axisLine:{lineStyle:{color:css('--bd')}},axisLabel:{color:css('--mu'),hideOverlap:true},splitLine:{lineStyle:{color:css('--bd')}}}),yA=()=>({type:'value',...ax(),axisLabel:{color:css('--mu'),formatter:cmp}});
+const donut=(data,onc)=>({...base(),tooltip:{trigger:'item',confine:true,valueFormatter:v=>money(v,1)},grid:undefined,legend:{type:'scroll',bottom:0,textStyle:{color:css('--mu')}},series:[{type:'pie',radius:['52%','76%'],center:['50%','44%'],label:{show:false},itemStyle:{borderColor:css('--sf'),borderWidth:2},data:data.map(([name,value])=>({name,value}))}]});
 function after(){setTimeout(()=>{if(!window.echarts){document.querySelectorAll('.chart').forEach(e=>e.innerHTML='<p class="mu">Charts could not load (offline?). Use the Table buttons.</p>');return}for(const id in CH){const el=$('#'+id);if(!el)continue;const i=echarts.init(el,null,{renderer:'svg'});INST[id]=i;i.setOption(CH[id].opt);if(CH[id].click)i.on('click',CH[id].click)}},80);
 document.querySelectorAll('[data-v]').forEach(el=>{const v=+el.dataset.v,k=el.dataset.k,t0=performance.now(),f=x=>k==='p'?pct(x):money(x);if(matchMedia('(prefers-reduced-motion:reduce)').matches||!isFinite(v)){el.textContent=f(v);return}const st=t=>{const p=Math.min(1,(t-t0)/600);el.textContent=f(v*(1-(1-p)**3));p<1&&requestAnimationFrame(st)};requestAnimationFrame(st)})}
-addEventListener('resize',()=>Object.values(INST).forEach(i=>i.resize()));
+/* responsive: redraw charts whenever the window, orientation or layout width changes */
+let _rz;const _rs=()=>{cancelAnimationFrame(_rz);_rz=requestAnimationFrame(()=>Object.values(INST).forEach(i=>{try{i.resize()}catch(e){}}))};
+addEventListener('resize',_rs);addEventListener('orientationchange',()=>setTimeout(_rs,250));
+if(window.ResizeObserver)new ResizeObserver(_rs).observe($('#main'));
 const emp=(ic,t,x,b,fn)=>`<div class="card em"><div class="ic" aria-hidden="true">${ic}</div><h3>${t}</h3><p class="mu">${x}</p><p><button class="btn p" onclick="${fn}">${b}</button></p></div>`;
 const hd=(t,h)=>`<h1>${t}</h1><p class="head">✦ ${h}</p>`;
 /* ---------- KPIs ---------- */
@@ -216,13 +350,13 @@ const B={rev:()=>by(cur,'income','category'),exp:()=>by(cur,'expense','category'
 if(e2&&B){INST.kd2&&INST.kd2.dispose();const i=INST.kd2=echarts.init(e2,null,{renderer:'svg'}),dt=B().filter(x=>x[1]>0);i.setOption({...donut(dt),series:[{type:'pie',radius:['42%','68%'],center:['50%','46%'],label:{show:true,formatter:'{b}\n{d}%',color:css('--tx')},itemStyle:{borderColor:css('--sf'),borderWidth:2},data:dt.map(([name,value])=>({name,value}))}]})}},150)}
 function explainK(id){const d=kdefs().find(x=>x.id===id),{cur}=win(),v=d.f(cur);let b=kdetail(d)+`<h4>How it is worked out</h4><div class="fm">${d.fo}</div><h4>Inputs</h4><p>Period: ${cur[0]} to ${cur[cur.length-1]} (${cur.length} month${cur.length>1?'s':''})</p><h4>Result</h4><p class="val">${d.k==='p'?pct(v):money(v,1)}</p>`;
 if(!isFinite(v)&&d.warn)b+=`<p class="dn">⚠ ${d.warn}</p>`;else if(d.warn&&d.id==='cash')b+=`<p class="mu">⚠ ${d.warn}</p>`;
-if(d.rows){const r=d.rows(cur);b+=`<h4>Source rows (${r.length})</h4>`+rowsT(r)}else b+=`<h4>Source rows</h4><table class="t"><tbody>${S.inv.map(i=>`<tr><td>${i.name}</td><td>${i.qty} × ${money(i.cost,1)}</td><td class="r">${money(i.qty*i.cost,1)}</td></tr>`).join('')}</tbody></table>`;drawer(d.l,b);kcharts(d)}
+if(d.rows){const r=d.rows(cur);b+=`<h4>Source rows (${r.length})</h4>`+rowsT(r)}else b+=`<h4>Source rows</h4><div class="tw"><table class="t"><tbody>${S.inv.map(i=>`<tr><td>${i.name}</td><td>${i.qty} × ${money(i.cost,1)}</td><td class="r">${money(i.qty*i.cost,1)}</td></tr>`).join('')}</tbody></table></div>`;drawer(d.l,b);kcharts(d)}
 /* ---------- pages ---------- */
 const PG={};
 PG.dash=()=>{const{cur,all}=win();if(!all.length)return hd('Dashboard','Add data to see your business at a glance.')+emp('📊','No data yet','Upload a spreadsheet or load the demo to see your dashboard.','Go to Data',"go('data')");
 const h=health(),col=h.score>=70?'--ok':h.score>=45?'--wa':'--bad',lab=h.score>=70?'Healthy':h.score>=45?'Fair':'At risk',R=44,C=2*Math.PI*R;
 const ring=`<svg width="112" height="112" viewBox="0 0 112 112" role="img" aria-label="Health score ${h.score} of 100, ${lab}"><circle cx="56" cy="56" r="${R}" fill="none" stroke="${css('--bd')}" stroke-width="10"/><circle cx="56" cy="56" r="${R}" fill="none" stroke="${css(col)}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C*h.score/100} ${C}" transform="rotate(-90 56 56)"/><text x="56" y="56" text-anchor="middle" font-size="28" font-weight="700" fill="${css('--tx')}">${h.score}</text><text x="56" y="76" text-anchor="middle" font-size="12" fill="${css('--mu')}">${lab}</text></svg>`;
-let o=hd('Dashboard',headline())+`<div class="card hero">${ring}<div style="flex:1;min-width:240px"><h3><span class="term" title="A 0–100 score combining profit margin, growth, cash cushion and cost control.">Financial health score</span></h3><p class="mu">${S.demo?'Based on demo data. ':''}Click a card below to see its formula and source rows.</p><details><summary style="cursor:pointer;color:var(--pr)">What drives this?</summary>${h.parts.map(p=>`<p style="margin:6px 0">${p[0]} <b>${Math.round(p[1])}/100</b> <span class="mu">(weight ${p[2]*100}%) — ${p[3]}</span></p>`).join('')}</details></div></div>`;
+let o=hd('Dashboard',headline())+`<div class="card hero">${ring}<div style="flex:1;min-width:min(240px,100%)"><h3><span class="term" title="A 0–100 score combining profit margin, growth, cash cushion and cost control.">Financial health score</span></h3><p class="mu">${S.demo?'Based on demo data. ':''}Click a card below to see its formula and source rows.</p><details><summary style="cursor:pointer;color:var(--pr)">What drives this?</summary>${h.parts.map(p=>`<p style="margin:6px 0">${p[0]} <b>${Math.round(p[1])}/100</b> <span class="mu">(weight ${p[2]*100}%) — ${p[3]}</span></p>`).join('')}</details></div></div>`;
 o+=`<div class="kpis">${kdefs().map(kpiCard).join('')}</div>`;
 if(S.adv){const fx=sum(inM(cur,'expense').filter(t=>FIXED.includes(t.category))),vr=M.exp(cur)-fx,r=M.rev(cur),cm=r?(r-vr)/r:NaN,be=cm>0&&fx?fx/cm:NaN,pv=win().prev;o+=`<div class="card"><h3>Accountant view</h3><div class="tw"><table class="t"><tbody><tr><td><span class="term" title="Share of each sale left after variable costs, to pay fixed costs.">Contribution margin</span></td><td class="r">${pct(cm)}</td><td class="mu">(Revenue − variable costs) ÷ Revenue</td></tr><tr><td><span class="term" title="Revenue needed just to cover fixed costs.">Break-even revenue</span></td><td class="r">${money(be)}</td><td class="mu">Fixed costs (${FIXED.join(', ')}) ÷ contribution margin ${isFinite(be)?'':'— needs fixed-cost categories'}</td></tr><tr><td>Revenue growth vs previous period</td><td class="r">${pv.length&&M.rev(pv)?pct((r-M.rev(pv))/M.rev(pv)):'—'}</td><td class="mu">(Current − previous) ÷ previous</td></tr></tbody></table></div></div>`}
 const ex=by(cur,'expense','category'),rv=by(cur,'income','category'),bud=Object.keys(by(all,'expense','category')).length?kb():0;
@@ -256,7 +390,7 @@ const tile=(l,v,s,c)=>`<div class="card tile" style="--c:${c}"><div class="lb">$
 let o=hd('Expenses',`${money(tot)} spent in this period${isFinite(d)?` (${d>=0?'▲':'▼'} ${pct(Math.abs(d),0)} vs previous)`:''}. Biggest cost: ${cats[0]?cats[0][0]:'none'}.`);
 o+=`<div class="kpis">${tile('Total spend',money(tot),cur.length+' month(s)','#D55E00')}${tile('Per day',money(tot/(cur.length*30)),'Average daily spending','#0072B2')}${tile('Largest category',cats[0]?esc(cats[0][0]):'—',cats[0]?pct(cats[0][1]/tot,0)+' of all spend':'','#CC79A7')}${tile('Fixed costs',pct(sum(inM(cur,'expense').filter(t=>FIXED.includes(t.category)))/tot,0),'Rent, salaries, software','#009E73')}</div>`;
 o+=`<div style="margin-bottom:12px">${['All',...cl].map(c=>`<button class="btn chip ${F===c?'on':''}" aria-pressed="${F===c}" onclick="S.ef='${esc(c)}';render()">${EI[c]||''} ${esc(c)}</button>`).join('')}</div>`;
-o+=`<div class="g" style="margin-bottom:16px">${cats.filter(([c])=>F==='All'||c===F).map(([c,v])=>{const s=l6.map(m=>sum(inM([m],'expense',c))),mx=Math.max(...s,1),pts=s.map((y,i)=>`${i*100/Math.max(1,s.length-1)},${26-y/mx*24}`).join(' '),a=an.find(x=>x.cat===c);return`<button class="card cat" style="--c:${ccol(c)}" onclick='drill(${JSON.stringify(c)},inM(win().cur,"expense",${JSON.stringify(c)}))'><div style="display:flex;gap:12px;align-items:center"><span class="ico" aria-hidden="true">${EI[c]||'🧾'}</span><div style="flex:1"><b>${esc(c)}</b> <span class="tag">${FIXED.includes(c)?'fixed':'variable'}</span><div class="mu">${pct(v/tot,0)} of spend</div></div><div class="val" style="font-size:20px">${money(v)}</div></div><div class="bar" style="margin:10px 0"><i style="width:${v/tot*100}%;background:var(--c)"></i></div><svg width="100%" height="28" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="${ccol(c)}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>${a?`<span class="dn">▲ ${pct(a.p,0)} above average</span>`:'<span class="up">✓ Normal</span>'}</button>`}).join('')}</div>`;
+o+=`<div class="g" style="margin-bottom:16px">${cats.filter(([c])=>F==='All'||c===F).map(([c,v])=>{const s=l6.map(m=>sum(inM([m],'expense',c))),mx=Math.max(...s,1),pts=s.map((y,i)=>`${i*100/Math.max(1,s.length-1)},${26-y/mx*24}`).join(' '),a=an.find(x=>x.cat===c);return`<button class="card cat" style="--c:${ccol(c)}" onclick='drill(${JSON.stringify(c)},inM(win().cur,"expense",${JSON.stringify(c)}))'><div style="display:flex;gap:12px;align-items:center"><span class="ico" aria-hidden="true">${EI[c]||'🧾'}</span><div style="flex:1;min-width:0"><b>${esc(c)}</b> <span class="tag">${FIXED.includes(c)?'fixed':'variable'}</span><div class="mu">${pct(v/tot,0)} of spend</div></div><div class="val" style="font-size:20px">${money(v)}</div></div><div class="bar" style="margin:10px 0"><i style="width:${v/tot*100}%;background:var(--c)"></i></div><svg width="100%" height="28" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="${ccol(c)}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>${a?`<span class="dn">▲ ${pct(a.p,0)} above average</span>`:'<span class="up">✓ Normal</span>'}</button>`}).join('')}</div>`;
 const st={...base(),tooltip:{trigger:'axis',valueFormatter:v=>money(v,1)},xAxis:{type:'category',data:all,...ax()},yAxis:yA(),series:cl.filter(c=>F==='All'||c===F).map(c=>({name:c,type:'bar',stack:'s',itemStyle:{color:ccol(c)},data:all.map(m=>Math.round(sum(inM([m],'expense',c))))}))};
 o+='<div class="g">'+cc('e1','Monthly spending by category','Each colour is a category; taller bars mean a costlier month.',st,all.map(m=>[m,M.exp([m])]),null,300)+cc('e2','Share of spending','Click a slice to see the rows behind it.',{...donut(cats),color:cats.map(([c])=>ccol(c))},cats,p=>drill(p.name,inM(cur,'expense',p.name)),300)+'</div><div style="height:16px"></div>';
 const q=(S.eq||'').toLowerCase(),rows=inM(cur,'expense').filter(t=>(F==='All'||t.category===F)&&(!q||(t.vendor+t.category).toLowerCase().includes(q))).sort((a,b)=>b.amount-a.amount);
@@ -277,10 +411,10 @@ PG.fc=()=>{const all=months();if(all.length<4)return hd('Forecast','Not enough h
 const h=S.fh,fn={Revenue:M.rev,Expenses:M.exp,Profit:net}[S.fm],{y,p,fc}=fcOf(fn,h),sd=p.best.rmse,lab=[...all,...Array.from({length:h},(_,i)=>addM(all[all.length-1],i+1))],pad=a=>[...Array(y.length).fill(null),...a],bd=i=>1.28*sd*Math.sqrt(1+i/3);
 const o1={...base(),tooltip:{trigger:'axis',valueFormatter:v=>money(v,1)},xAxis:{type:'category',data:lab,...ax()},yAxis:yA(),series:[{name:'Actual',type:'line',data:[...y,...Array(h).fill(null)]},{name:'Expected',type:'line',lineStyle:{type:'dashed'},symbol:'rect',data:pad(fc)},{name:'Best case',type:'line',lineStyle:{type:'dotted'},symbol:'triangle',data:pad(fc.map((v,i)=>v+bd(i)))},{name:'Worst case',type:'line',lineStyle:{type:'dotted'},symbol:'diamond',data:pad(fc.map((v,i)=>v-bd(i)))}]};
 const sel=`<select class="sel" aria-label="Metric" onchange="S.fm=this.value;render()">${['Revenue','Expenses','Profit'].map(x=>`<option ${x===S.fm?'selected':''}>${x}</option>`).join('')}</select> <select class="sel" aria-label="Horizon" onchange="S.fh=+this.value;render()">${[3,6,12,24,36].map(x=>`<option value="${x}" ${x===h?'selected':''}>${x} months</option>`).join('')}</select>`;
-let o=hd('Forecast',`${S.fm} is expected to ${fc[h-1]>y[y.length-1]?'rise':'fall'} to about ${money(fc[h-1])} a month by ${lab[lab.length-1]}.`)+`<div style="margin-bottom:16px">${sel}</div>`;
+let o=hd('Forecast',`${S.fm} is expected to ${fc[h-1]>y[y.length-1]?'rise':'fall'} to about ${money(fc[h-1])} a month by ${lab[lab.length-1]}.`)+`<div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap">${sel}</div>`;
 o+=cc('f1',`${S.fm} forecast`,`Dashed = most likely. Dotted = best and worst case (about 80% range, widening over time).`,o1,fc.map((v,i)=>[lab[y.length+i],v]),null,320);
 o+=`<section class="card"><h3>In plain English</h3><p>${p.ok?`We tested 3 methods on your last 3 months and picked <b>${p.best.n}</b> (average error ${pct(p.best.mape)}).`:`There are fewer than 8 months of history, so back-testing is not reliable. Using a simple <b>linear trend</b>; treat the range as rough.`} Assumes recent patterns continue, with no price changes, new hires or one-off events.</p>${p.ok?`<div class="tw"><table class="t"><thead><tr><th>Model</th><th class="r"><span class="term" title="Mean absolute percentage error: average % the model missed by.">MAPE</span></th><th class="r"><span class="term" title="Root mean squared error, in money units.">RMSE</span></th><th></th></tr></thead><tbody>${p.tab.map((m,i)=>`<tr><td>${m.n}</td><td class="r">${pct(m.mape)}</td><td class="r">${money(m.rmse)}</td><td>${i?'':'<span class="tag">★ Best model</span>'}</td></tr>`).join('')}</tbody></table></div>`:''}</section>`;
-const sc=S.sc,{base:bs,scn}=scenario(h),sl=(k,l,mn,mxv)=>`<label style="display:block;margin:10px 0">${l}: <b id="v_${k}">${sc[k]}</b><input type="range" min="${mn}" max="${mxv}" value="${sc[k]}" style="width:100%" oninput="setSc('${k}',this.value)"></label>`;
+const sc=S.sc,{base:bs,scn}=scenario(h),sl=(k,l,mn,mxv)=>`<label style="display:block;margin:10px 0">${l}: <b id="v_${k}">${sc[k]}</b><input type="range" min="${mn}" max="${mxv}" value="${sc[k]}" style="width:100%;min-height:32px" oninput="setSc('${k}',this.value)"></label>`;
 CH.sc={opt:scOpt(lab.slice(y.length),bs,scn),rows:[]};
 o+=`<section class="card"><h3>What-if scenarios</h3><p class="mu">Move the sliders; profit forecast updates instantly. Assumes each 1% price rise cuts sales volume by 0.5%; a hire costs ${money(60000)}/month.</p><div class="g">${sl('sales','Sales change %',-30,30)}${sl('price','Price change %',-10,10)}${sl('cost','Cost change %',-20,30)}${sl('hires','New hires',0,5)}</div><div id="sc" class="chart" style="height:260px" role="img" aria-label="Baseline vs scenario profit"></div><p id="scT"></p><button class="btn" onclick="saveSc()">Save scenario</button>${S.scen.length?`<div class="tw"><table class="t"><thead><tr><th>Saved</th><th class="r">Total profit, next ${h} months</th></tr></thead><tbody>${S.scen.map(s=>`<tr><td>${s.n}</td><td class="r">${money(s.v,1)}</td></tr>`).join('')}</tbody></table></div>`:''}</section>`;
 const pr=fcOf(net,h),m=mc(pr.fc,pr.p.best.rmse,cashAt(all),h),l3=all.slice(-3),n3=net(l3)/3,c0=cashAt(all),fa=lab.slice(y.length);
@@ -302,7 +436,7 @@ if(/stock|inventory|reorder|product/.test(Q)){if(!S.inv.length)return{t:'No inve
 return{t:'I can only answer from your computed numbers, and I do not have enough to answer that. Try asking about profit, cutting costs, hiring, cash runway, health score or stock.',b:[]}}
 function ask(q){q=(q||$('#q').value).trim();if(!q)return;const a=answer(q);S.chat.push({u:q,a});render();setTimeout(()=>{const c=$('.chat');c&&(c.scrollTop=c.scrollHeight)},0)}
 PG.cfo=()=>{const sg=['Why did profit change last month?','Which expense should I cut first?','Can I afford a new hire?','How long will my cash last?','Explain my health score','Which products should I reorder?'];
-return hd('AI CFO','Ask anything. Answers come only from your own numbers, with the calculation shown.')+`<section class="card">${sg.map(s=>`<button class="btn chip" onclick="ask(this.textContent)">${s}</button>`).join('')}<div class="chat" aria-live="polite">${S.chat.length?S.chat.map(c=>`<div class="m u">${esc(c.u)}</div><div class="m a">${esc(c.a.t)}${c.a.b.length?`<div class="bs"><b>Based on:</b> ${c.a.b.map(esc).join(' · ')}</div>`:''}</div>`).join(''):'<p class="mu">Pick a question above or type your own.</p>'}</div><div style="display:flex;gap:8px;margin-top:12px"><input id="q" class="sel" style="flex:1" placeholder="Ask about your business…" aria-label="Ask the AI CFO" onkeydown="event.key==='Enter'&&ask()"><button class="btn p" onclick="ask()">Ask</button></div></section><section class="card"><h3>Risk alerts</h3>${insights().map(i=>`<div class="ins"><b>${esc(i.t)}</b>${esc(i.x)}</div>`).join('')}</section>`};
+return hd('AI CFO','Ask anything. Answers come only from your own numbers, with the calculation shown.')+`<section class="card">${sg.map(s=>`<button class="btn chip" onclick="ask(this.textContent)">${s}</button>`).join('')}<div class="chat" aria-live="polite">${S.chat.length?S.chat.map(c=>`<div class="m u">${esc(c.u)}</div><div class="m a">${esc(c.a.t)}${c.a.b.length?`<div class="bs"><b>Based on:</b> ${c.a.b.map(esc).join(' · ')}</div>`:''}</div>`).join(''):'<p class="mu">Pick a question above or type your own.</p>'}</div><div style="display:flex;gap:8px;margin-top:12px"><input id="q" class="sel" style="flex:1;min-width:0" placeholder="Ask about your business…" aria-label="Ask the AI CFO" onkeydown="event.key==='Enter'&&ask()"><button class="btn p" onclick="ask()">Ask</button></div></section><section class="card"><h3>Risk alerts</h3>${insights().map(i=>`<div class="ins"><b>${esc(i.t)}</b>${esc(i.x)}</div>`).join('')}</section>`};
 /* ---------- import pipeline ---------- */
 const RX={date:/date|day|time|when/i,type:/type|kind|dr.?cr|in.?out|flow/i,amount:/amount|total|value|debit|credit|sales|price|amt/i,category:/categ|head|account|class/i,vendor:/vendor|supplier|payee|party|customer|merchant|name/i,desc:/desc|note|memo|narr/i};
 function detect(cols){const m={};for(const k in RX){const c=cols.find(c=>RX[k].test(c)&&!Object.values(m).includes(c));m[k]=c||''}return m}
@@ -412,7 +546,7 @@ return`<div class="kpis"><div class="card tile" style="--c:#3730A3"><div class="
 <section class="card"><h3>Advance tax</h3>${adv>=R.advMin?`<p class="mu">Liability after TDS/TCS is ${inr(adv)}. Cumulative instalments (senior citizens without business income are exempt):</p><div class="tw"><table class="t"><tbody>${R.adv.map(([d,p])=>`<tr><td>By ${d}</td><td class="r">${inr(Math.round(adv*p))}</td></tr>`).join('')}</tbody></table></div>`:`<p>✓ Under ₹${R.advMin.toLocaleString('en-IN')} after TDS/TCS: advance tax is not required.</p>`}</section></div>
 <section class="card"><h3>Review &amp; audit trail</h3><p class="mu">Status here is a working label. Submission and verification can only be recorded after the official portal confirms them, which this app cannot do.</p><select class="sel" aria-label="Review status" onchange="tset('st',this.value)">${STAT.map(s=>`<option ${s===t.st?'selected':''}>${s}</option>`).join('')}</select> <button class="btn p" onclick="tlog()">Save this computation</button>${t.log.length?`<div class="tw"><table class="t"><thead><tr><th>Saved</th><th>Year</th><th>Status</th><th class="r">New</th><th class="r">Old</th><th>Input hash</th></tr></thead><tbody>${t.log.map(l=>`<tr><td>${l.at}</td><td>${l.fy}</td><td>${l.st}</td><td class="r">${inr(l.nw)}</td><td class="r">${inr(l.od)}</td><td>${l.h}</td></tr>`).join('')}</tbody></table></div>`:''}</section>
 <section class="card"><h3>Warnings &amp; missing information</h3>${W.map(w=>`<div class="ins">⚠ ${esc(w)}</div>`).join('')}</section>`}
-PG.tax=()=>{const t=TS();return hd('Tax planner','Deterministic Indian income-tax estimate. Every figure comes from the rules below, never from AI guesswork.')+`<section class="card"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><select class="sel" aria-label="Tax year" onchange="tset('fy',this.value);render()">${Object.keys(TAXR).map(f=>`<option ${f===t.fy?'selected':''}>${f}</option>`).join('')}</select><select class="sel" aria-label="Age category" onchange="tset('age',this.value)"><option value="u60" ${t.age==='u60'?'selected':''}>Under 60</option><option value="s60" ${t.age==='s60'?'selected':''}>60 to 79 (old regime)</option><option value="s80" ${t.age==='s80'?'selected':''}>80 or above (old regime)</option></select><button class="btn" onclick="tbooks()">Import net profit from my books</button><span class="tag">All tax amounts are in ₹ INR</span></div><p class="mu">Resident individuals only. Nothing is uploaded; inputs stay in this browser. Never enter portal passwords or OTPs.</p></section>`+TF.map(([h,f])=>`<section class="card"><h3>${h}</h3><div class="g">${f.map(([k,l])=>`<label>${l}<input class="sel" style="width:100%" type="number" ${k==='bus'?'':'min="0"'} value="${t.in[k]||''}" placeholder="0" oninput="tin('${k}',this.value)"></label>`).join('')}</div>${h==='Deductions'?`<label style="display:block;margin-top:10px"><input type="checkbox" ${t.parSen?'checked':''} onchange="tset('parSen',this.checked)"> Parents are senior citizens</label><label style="display:block"><input type="checkbox" ${t.conf?'checked':''} onchange="tset('conf',this.checked)"> I have entered all my deductions and exemptions (needed for a recommendation)</label>`:''}</section>`).join('')+'<div id="taxres">'+taxRes()+'</div>'+tRules()};
+PG.tax=()=>{const t=TS();return hd('Tax planner','Deterministic Indian income-tax estimate. Every figure comes from the rules below, never from AI guesswork.')+`<section class="card"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><select class="sel" aria-label="Tax year" onchange="tset('fy',this.value);render()">${Object.keys(TAXR).map(f=>`<option ${f===t.fy?'selected':''}>${f}</option>`).join('')}</select><select class="sel" aria-label="Age category" onchange="tset('age',this.value)"><option value="u60" ${t.age==='u60'?'selected':''}>Under 60</option><option value="s60" ${t.age==='s60'?'selected':''}>60 to 79 (old regime)</option><option value="s80" ${t.age==='s80'?'selected':''}>80 or above (old regime)</option></select><button class="btn" onclick="tbooks()">Import net profit from my books</button><span class="tag">All tax amounts are in ₹ INR</span></div><p class="mu">Resident individuals only. Nothing is uploaded; inputs stay in this browser. Never enter portal passwords or OTPs.</p></section>`+TF.map(([h,f])=>`<section class="card"><h3>${h}</h3><div class="g">${f.map(([k,l])=>`<label>${l}<input class="sel" style="width:100%" type="number" inputmode="decimal" ${k==='bus'?'':'min="0"'} value="${t.in[k]||''}" placeholder="0" oninput="tin('${k}',this.value)"></label>`).join('')}</div>${h==='Deductions'?`<label style="display:block;margin-top:10px"><input type="checkbox" ${t.parSen?'checked':''} onchange="tset('parSen',this.checked)"> Parents are senior citizens</label><label style="display:block"><input type="checkbox" ${t.conf?'checked':''} onchange="tset('conf',this.checked)"> I have entered all my deductions and exemptions (needed for a recommendation)</label>`:''}</section>`).join('')+'<div id="taxres">'+taxRes()+'</div>'+tRules()};
 function tRules(){const R=TAXR[TS().fy];return`<section class="card"><h3>Rules in force (${TS().fy})</h3><p class="mu">Versioned rule set, verified ${R.vd} against published summaries of Budget 2026, which left slabs unchanged. <b>Not yet confirmed line by line on incometaxindia.gov.in: treat as REQUIRES PROFESSIONAL REVIEW.</b> The Income-tax Act, 2025 replaces the 1961 Act from 1 Apr 2026 with new section numbers; mapping needs review.</p><div class="tw"><table class="t"><tbody><tr><td>New regime slabs</td><td>0–4L nil · 4–8L 5% · 8–12L 10% · 12–16L 15% · 16–20L 20% · 20–24L 25% · above 24L 30%</td></tr><tr><td>New: std deduction / rebate</td><td>₹75,000 · 87A up to ₹60,000 (income ≤ ₹12L, marginal relief above)</td></tr><tr><td>Old regime slabs</td><td>Under 60: 0–2.5L nil · 5% to 5L · 20% to 10L · 30% above. Seniors: higher exemption</td></tr><tr><td>Old: std deduction / rebate</td><td>₹50,000 · 87A ₹12,500 (income ≤ ₹5L)</td></tr><tr><td>Surcharge</td><td>10% above 50L · 15% above 1Cr · 25% above 2Cr · 37% above 5Cr (old only; new capped 25%); CG surcharge capped 15%</td></tr><tr><td>Cess · capital gains</td><td>4% · 111A 20% · 112A 12.5% above ₹1.25L</td></tr></tbody></table></div><p><button class="btn" onclick="ttest()">Run ${TESTS.length+1} self-tests</button></p><div class="tw"><table class="t"><tbody id="taxtest"></tbody></table></div></section>
 <section class="card"><h3>Feature status</h3><div class="tw"><table class="t"><tbody>${[['Versioned tax engine, regime comparison, ITR hint, advance tax','PARTIALLY IMPLEMENTED'],['Audit trail, review status labels','IMPLEMENTED (browser-only)'],['Books → business income import','PARTIALLY IMPLEMENTED'],['Accounts, auth, database, private storage, tenant isolation','PLANNED (needs backend)'],['Form 16 / AIS / 26AS extraction, reconciliation','PLANNED'],['Double-entry ledger, GST, capital gains beyond listed equity','PLANNED'],['E-filing submission','BLOCKED BY INTEGRATION (no verified API)'],['AI accountant grounded in this engine','PLANNED (needs server-side model access)']].map(([a,b])=>`<tr><td>${a}</td><td class="r">${b}</td></tr>`).join('')}</tbody></table></div></section>`}
 
@@ -442,7 +576,7 @@ const draw=()=>{const w=q.value.toLowerCase().split(' ').filter(Boolean);list=cm
 d.onclick=e=>{const li=e.target.closest('li[data-i]');if(li)run(+li.dataset.i);else if(e.target===d)shut()};q.oninput=()=>{sel=0;draw()};
 q.onkeydown=e=>{if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();if(!list.length)return;sel=(sel+(e.key==='ArrowDown'?1:-1)+list.length)%list.length;draw();$('#pl [aria-selected=true]')?.scrollIntoView({block:'nearest'})}else if(e.key==='Enter')run(sel);else if(e.key==='Escape')shut()};draw();q.focus()};
 addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('#pal')?shut():pal()}else if(e.key==='/'&&!K.test(e.target.tagName)&&!$('#pal')){e.preventDefault();pal()}});
-$('#own').insertAdjacentHTML('beforebegin','<button class="btn" id="kb" onclick="window.efxPal()" aria-label="Search pages and actions">⌕ Search <kbd>Ctrl K</kbd></button><button class="btn" onclick="window.efxCsv()" aria-label="Export this period as CSV" title="Export CSV">⤓</button>');window.efxPal=pal;window.efxCsv=csv;
+$('#own').insertAdjacentHTML('beforebegin','<button class="btn" id="kb" onclick="window.efxPal()" aria-label="Search pages and actions">⌕<span class="lg"> Search </span><kbd>Ctrl K</kbd></button><button class="btn" onclick="window.efxCsv()" aria-label="Export this period as CSV" title="Export CSV">⤓</button>');window.efxPal=pal;window.efxCsv=csv;
 render=function(){R0();save();setTimeout(enh,0)};
 try{const u=JSON.parse(localStorage.getItem(UK)||'null');if(u){if(PG[u.v])S.view=u.v;if([1,3,6,12].includes(u.r))S.range=u.r;if(RATE[u.c]){S.cur=u.c;document.querySelectorAll('.top select')[1].value=u.c}if(u.a){S.adv=true;const b=$('#adv');b.textContent='Advanced';b.setAttribute('aria-pressed',true)}if(u.t)document.documentElement.dataset.theme=u.t}}catch(e){}
 render()})();
